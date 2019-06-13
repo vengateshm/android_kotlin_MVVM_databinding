@@ -2,6 +2,7 @@ package com.android.kotlinmvvm.ui.auth
 
 import android.view.View
 import androidx.lifecycle.ViewModel
+import com.android.kotlinmvvm.data.repositories.UserRepository
 
 class AuthViewModel : ViewModel() {
     var email: String? = null
@@ -17,7 +18,9 @@ class AuthViewModel : ViewModel() {
             return
         }
 
+        // Bad practice, tight coupling
+        val loginResponse = UserRepository().userLogin(email!!, password!!)
         // Success
-        authStateListener?.onSuccess()
+        authStateListener?.onSuccess(loginResponse)
     }
 }

@@ -2,11 +2,15 @@ package com.android.kotlinmvvm.ui.auth
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.android.kotlinmvvm.R
+import com.android.kotlinmvvm.utils.hide
+import com.android.kotlinmvvm.utils.show
 import com.android.kotlinmvvm.utils.showToast
+import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginActivity : AppCompatActivity(), AuthStateListener {
 
@@ -22,14 +26,19 @@ class LoginActivity : AppCompatActivity(), AuthStateListener {
     }
 
     override fun onStarted() {
-        showToast("Login started")
+//        showToast("Login started")
+        progressBar.show()
     }
 
-    override fun onSuccess() {
-        showToast("Login success")
+    override fun onSuccess(loginResponse: LiveData<String>) {
+        loginResponse.observe(this, Observer {
+            progressBar.hide()
+            showToast(it)
+        })
     }
 
     override fun onFailure(message: String) {
+        progressBar.hide()
         showToast(message)
     }
 }
