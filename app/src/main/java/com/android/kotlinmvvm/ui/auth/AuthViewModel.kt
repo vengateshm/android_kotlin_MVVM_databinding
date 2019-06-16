@@ -3,6 +3,7 @@ package com.android.kotlinmvvm.ui.auth
 import android.view.View
 import androidx.lifecycle.ViewModel
 import com.android.kotlinmvvm.data.repositories.UserRepository
+import com.android.kotlinmvvm.utils.Coroutines
 
 class AuthViewModel : ViewModel() {
     var email: String? = null
@@ -18,9 +19,16 @@ class AuthViewModel : ViewModel() {
             return
         }
 
-        // Bad practice, tight coupling
-        val loginResponse = UserRepository().userLogin(email!!, password!!)
-        // Success
-        authStateListener?.onSuccess(loginResponse)
+
+        Coroutines.main {
+            // Bad practice, tight coupling
+            val response = UserRepository().userLogin(email!!, password!!)
+            if (response.isSuccessful) {
+                // Success
+                authStateListener?.onSuccess(response.body()?.user!!)
+            } else {
+                authStateListener?.onFailure("Error code: ${response.code()}")
+            }
+        }
     }
 }
